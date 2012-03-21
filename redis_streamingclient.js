@@ -2,41 +2,14 @@ var redis = require("redis"),
     stream_reader = require("./stream_reader");
 
 /**
- * Mock implementation of a redis client for unit-testing
- * and debugging.
- */
-MOCK_ID = 0;
-function RedisMockClient(port, host, opts) {
-    this.id = MOCK_ID++;
-
-    this.on = function(ev, callback) {
-        var id = this.id;
-        console.log("RedisMockClient[" + id + "]::on(" + ev + ") Called");
-        if (callback) callback();
-    }
-
-    this.incr = function(args, callback) {
-        var id = this.id;
-        console.log("RedisMockClient[" + id + "]::incr(" + args + ") Called");
-        if (callback) callback();
-    }
-
-
-    this.quit = function(callback) {
-        var id = this.id;
-        console.log("RedisMockClient[" + id + "]::quit() Called");
-        if (callback) callback();
-    }
-}
-
-/**
  * RedisStreamingClient
  * 
  * A class wrapper for implementing the
  * parallel redis request stream
  */
-function RedisStreamingClient(stream_reader, key_func, val_func, args) {
+RedisStreamingClient = function(stream_reader, key_func, val_func, args, client_factory) {
     this.stream_reader = stream_reader;
+    this.client_factory = client_factory || redis.createClient;
 
     this.key_func = key_func;
     this.val_func = val_func;
@@ -57,9 +30,7 @@ RedisStreamingClient.prototype.run = function(callback) {
     this.callback = callback;
 
     for (i=0; i < this.args.num_clients; i++) {
-        var client = 
-            new RedisMockClient(this.args.port, this.args.host, this.args.client_options);
-            //redis.createClient(port, host, this.args.client_options);
+        var client = this.client_factory(this.args.port, this.args.host, this.args.client_options); 
         client.create_time = Date.now();
 
         this.clients[this.clients.length] = client;
@@ -144,17 +115,4 @@ RedisStreamingClient.prototype.kill_clients = function() {
     });
 }
 
-
-
-// Test functionality
-stream_reader = new stream_reader.FileStreamReader("test.txt");
-key_func = function(line) { return line.split(" ")[0]; }
-val_func = function(line) { return line.split(" ")[1]; }
-
-test = new RedisStreamingClient(stream_reader, key_func, val_func, {
-    command: "incr", num_clients: 10, client_options: {}, 
-    host: 'localhost', port: 8093 });
-
-test.run(function() {
-    console.log("All done!");
-});
+exports.RedisStreamingClient = RedisStreamingClient;
