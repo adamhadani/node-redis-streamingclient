@@ -4,11 +4,22 @@
 
 This tool is inspired by an example provided by the [node_redis](https://github.com/mranney/node_redis) package.
 
+## Requirements
+
+You will need the redis module. Can be installed using npm:
+
+```
+npm install redis
+```
+
 ## Usage
 
 Example usage:
 
 ```node
+var redis = require("redis"),
+    stream_reader = require("./stream_reader");
+
 stream_reader = new stream_reader.FileStreamReader("test.txt");
 key_func = function(line) { return line.split(" ")[0]; }
 val_func = function(line) { return line.split(" ")[1]; }

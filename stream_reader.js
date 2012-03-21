@@ -7,6 +7,8 @@ var fs = require("fs"),
  * Simple synchronuous stream reader for iterating over a file line by line.
  * exposes two iterator-like methods, hasNext() and next().
  *
+ * This class is a slight mutation
+ * of [this](http://blog.jaeckel.com/2010/03/i-tried-to-find-example-on-using-node.html) piece of code.
  */
 exports.FileStreamReader = function(filename, bufferSize) {
 
