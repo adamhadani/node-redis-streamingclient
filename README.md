@@ -33,3 +33,9 @@ test.run(function() {
 });
 ```
 
+this code is included as a runnable unit-test in test.js. To run, can be invoked from command-line:
+
+```
+node test.js
+```
+
