@@ -15,6 +15,12 @@ function RedisMockClient(port, host, opts) {
         if (callback) callback();
     }
 
+    this.set = function(args, callback) {
+        var id = this.id;
+        console.log("RedisMockClient[" + id + "]::set(" + args + ") Called");
+        if (callback) callback();
+    }
+
     this.incr = function(args, callback) {
         var id = this.id;
         console.log("RedisMockClient[" + id + "]::incr(" + args + ") Called");
@@ -39,7 +45,7 @@ client_factory = function(port, host, opts) {
 
 test = new rsc.RedisStreamingClient(stream_reader, key_func, val_func, {
     command: "set", num_clients: 10, client_options: { return_buffers: false }, 
-    host: "127.0.0.1", port: 6379 }); //, client_factory);
+    host: "127.0.0.1", port: 6379 }, client_factory);
 
 test.run(function() {
     console.log("All done!");
