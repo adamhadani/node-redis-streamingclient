@@ -57,8 +57,9 @@ RedisStreamingClient.prototype.on_clients_ready = function() {
 RedisStreamingClient.prototype.fill_pipeline = function() {
     var num_active = this.commands_sent - this.commands_completed;
 
-    console.log("fill_pipeline(): num_active = " + num_active);
     while (this.kill_flag == null && num_active < this.max_pipeline) {
+        //console.log("RedisStreamingClient.fill_pipeline() - calling send_next(). num_active: " + num_active);
+        num_active++;
         this.send_next();
     }
 
@@ -84,6 +85,8 @@ RedisStreamingClient.prototype.send_next = function() {
     // Issue command, iterating over clients in sequence, and filling
     // command pipeline after each completion
     this.commands_sent++;
+    //console.log("RedisStreamingClient::send_next() - args: " + args + ", commands_sent: " + this.commands_sent);
+
     this.clients[curr_client][this.args.command](args, function(err, res) {
         if (err) {
             throw err;
@@ -103,7 +106,6 @@ RedisStreamingClient.prototype.send_next = function() {
 
 RedisStreamingClient.prototype.kill_clients = function() {
     var self = this;
-
     this.clients.forEach(function (client, pos) {
         if (pos == self.clients.length-1) {
             client.quit(function (err, res) {

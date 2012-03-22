@@ -38,8 +38,8 @@ client_factory = function(port, host, opts) {
 };
 
 test = new rsc.RedisStreamingClient(stream_reader, key_func, val_func, {
-    command: "incr", num_clients: 10, client_options: {}, 
-    host: 'localhost', port: 8093 }, client_factory);
+    command: "set", num_clients: 10, client_options: { return_buffers: false }, 
+    host: "127.0.0.1", port: 6379 }); //, client_factory);
 
 test.run(function() {
     console.log("All done!");
